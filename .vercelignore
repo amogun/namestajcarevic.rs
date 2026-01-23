@@ -1,0 +1,31 @@
+# Development files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts (Vercel builds these)
+.next/
+out/
+dist/
+
+# Development tools
+.vscode/
+.idea/
+*.log
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Scripts (not needed in production)
+script/
+
+# Replit specific
+.replit
+replit.md

@@ -20,6 +20,10 @@ const nextConfig = {
       },
     ],
   },
+  // Optimize for production
+  compress: true,
+  poweredByHeader: false,
+  reactStrictMode: true,
 };
 
 export default nextConfig;
