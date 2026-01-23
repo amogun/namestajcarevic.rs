@@ -75,6 +75,8 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^25.0.9",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.11.10",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.20",
