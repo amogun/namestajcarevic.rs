@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/aleksamilojevic/Desktop/Grand%20Vector/1.%20Website/Carevic/website-replit-main/app/contact/layout.tsx"],"sourcesContent":["import type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Kontakt - Nameštaj Carevic Kragujevac',\n  description: 'Kontaktirajte nas za sva pitanja o nameštaju. Adresa: Božidara Milosavljevica 12, Kragujevac. Telefon: 064 119 31 83, 060 024 42 02.',\n  keywords: 'kontakt, nameštaj Carevic, Kragujevac, telefon, email, lokacija',\n  openGraph: {\n    title: 'Kontakt - Nameštaj Carevic',\n    description: 'Kontaktirajte nas za sve informacije o našem nameštaju i uslugama.',\n    type: 'website',\n  },\n};\n\nexport default function ContactLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {\n  return <>{children}</>;\n}\n"],"names":[],"mappings":";;;;;;;;AAEO,MAAM,WAAqB;IAChC,OAAO;IACP,aAAa;IACb,UAAU;IACV,WAAW;QACT,OAAO;QACP,aAAa;QACb,MAAM;IACR;AACF;AAEe,SAAS,cAAc,EACpC,QAAQ,EAGT;IACC,qBAAO;kBAAG;;AACZ"}}]
-}
