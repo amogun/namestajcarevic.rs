@@ -1,0 +1,59 @@
+You are a full-stack web developer AI. Build a complete, production-ready website project for a furniture salon named "Carević" in Kragujevac. Target platform: Replit (must run on Replit). Tech stack and constraints:
+- Frontend & SSR: Next.js (App Router) with server components for SEO.
+- Styling: Tailwind CSS (use a minimal custom theme: wood/warm palette).
+- Forms & validation: React Hook Form + Zod.
+- Database & backend: Supabase (Postgres) for products and orders. Provide SQL schema and server API code that writes orders to Supabase.
+- Email: implement server-side email notifications (recommend Resend or SMTP); provide placeholder env vars.
+- Hosting: runnable on Replit (include start script, build steps and instructions how to set environment variables in Replit Secrets).
+- Accessibility & SEO: generate per-page metadata via generateMetadata(), Open Graph tags, and JSON-LD LocalBusiness/Product schema.
+
+Functional requirements:
+1. Pages:
+   - `/` Home: hero with salon name "Carević", short tagline, featured products, CTA "Pogledaj katalog" and "Naruči".
+   - `/katalog` Katalog: grid of products with filter by category, search input (client-side).
+   - `/proizvod/[slug]` Product detail: images, description, dimensions/material, price, "Naruči" button that opens order form anchored on same page.
+   - `/o-nama` About: about salon, photo, location map embed (Google Maps iframe).
+   - `/kontakt` Contact: contact details, map, contact form.
+   - Global header/footer: phone, address (Kragujevac), opening hours, social links.
+
+2. Order flow (no cart):
+   - Order form fields: full name, phone, email, address, product_id, quantity, preferred delivery date, notes.
+   - On submit: validate with Zod, POST to `/api/order`.
+   - `/api/order` server handler: insert into Supabase `orders` + `order_items` tables, send confirmation email to customer and notification to salon email, return success.
+   - Send minimal order PDF or summary as plain HTML in email (optional).
+
+3. Supabase schema (provide SQL):
+   - `products (id, slug, title, description, price_cents, currency, images jsonb, category, dimensions jsonb, created_at)`
+   - `orders (id, customer_name, email, phone, address, total_cents, status, created_at)`
+   - `order_items (id, order_id, product_id, quantity, price_cents)`
+   - `customers` optional
+
+4. SEO & Local business schema:
+   - Per product metadata (title, description, canonical, OG images).
+   - JSON-LD for `LocalBusiness` with:
+     name: "Carević"
+     address: Kragujevac, Serbia (put a plausible street placeholder)
+     telephone: placeholder
+     openingHours: example hours Mon–Sat
+     geo coordinates: placeholder
+   - Include keywords for "nameštaj Kragujevac", "Salon nameštaja Carević", "kupi nameštaj Kragujevac".
+
+5. Design & assets:
+   - Color palette: warm wood brown (#6b4f3a), light beige (#f7f1ea), dark accent (#2a1f17).
+   - Typography: serif headline + sans body (e.g., Playfair Display + Inter).
+   - Use image placeholders and instructions where to upload real photos to Supabase Storage or Replit assets.
+   - Desktop / tablet / mobile responsive.
+
+6. Dev & deploy instructions:
+   - `README.md` with steps to run locally, set SUPABASE_URL, SUPABASE_KEY, EMAIL_SMTP, SALON_EMAIL, and start on Replit.
+   - Provide `package.json`, Next.js config, Tailwind config, and sample `.env` example (values redacted).
+   - Quick test data: add 3 sample products for Carević.
+
+7. Deliverables (exact output expected from the AI):
+   - Project tree and main file contents (home page, product page, API route for order, Supabase SQL).
+   - `README.md` with Replit-specific steps: create Repl > import repo/files > set Secrets (SUPABASE_URL, SUPABASE_KEY, EMAIL_SMTP, SALON_EMAIL) > run `npm run dev` or `npm start`.
+   - Short guidance how to replace placeholders (images, address, phone) and how to connect a real email provider.
+
+Tone & content: clean, professional, localized to Kragujevac (use Serbian language for UI labels), easy for salon staff to edit content. Use clear CTA text in Serbian: "Naruči", "Kontakt", "Pogledaj", "Pošalji porudžbinu".
+
+Output everything in code blocks and full file contents where relevant so it's ready to paste into Replit.

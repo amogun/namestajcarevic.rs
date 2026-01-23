@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Core brand colors - Furniture Salon Aesthetic */
+  --brand-brown: 26 29% 32%;      /* #6b4f3a - Primary Wood Tone */
+  --brand-beige: 33 42% 94%;      /* #f7f1ea - Background/Light */
+  --brand-accent: 14 18% 14%;     /* #2a1f17 - Dark Accent/Text */
+  --brand-gold: 35 30% 50%;       /* #a69159 - Subtle Gold Accent */
+
+  /* Shadcn/Tailwind mapping */
+  --background: 33 42% 94%;
+  --foreground: 14 18% 14%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 14 18% 14%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 14 18% 14%;
+
+  --primary: 26 29% 32%;
+  --primary-foreground: 33 42% 94%;
+
+  --secondary: 33 30% 90%;
+  --secondary-foreground: 26 29% 32%;
+
+  --muted: 33 20% 90%;
+  --muted-foreground: 26 15% 50%;
+
+  --accent: 35 30% 90%;
+  --accent-foreground: 26 29% 32%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 26 15% 85%;
+  --input: 26 15% 85%;
+  --ring: 26 29% 32%;
+
+  --radius: 0.5rem;
+
+  /* Fonts */
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    @apply font-semibold tracking-tight;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
+}
+
+/* Premium utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.glass-panel {
+  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
