@@ -4,21 +4,13 @@ import { ProductCard } from "@/components/ProductCard";
 import Link from "next/link";
 import { ArrowRight, Star, Clock, Truck } from "lucide-react";
 import { type Product } from "@shared/schema";
+import { storage } from "@/lib/storage";
 
 export const revalidate = 3600; // Revalidate every hour
 
 async function getFeaturedProducts() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products`, {
-      next: { revalidate: 3600 }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch products');
-      return [];
-    }
-
-    const products = await res.json();
+    const products = await storage.getProducts();
     return products.slice(0, 4); // Return first 4 products
   } catch (error) {
     console.error('Error fetching featured products:', error);

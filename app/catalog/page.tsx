@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import { storage } from '@/lib/storage';
 
 export const revalidate = 1800; // Revalidate every 30 minutes
 
@@ -27,20 +28,8 @@ export const metadata = {
 
 async function getProducts(category?: string) {
   try {
-    const url = category
-      ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products?category=${encodeURIComponent(category)}`
-      : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products`;
-
-    const res = await fetch(url, {
-      next: { revalidate: 1800 }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch products');
-      return [];
-    }
-
-    return await res.json();
+    const products = await storage.getProducts(category);
+    return products;
   } catch (error) {
     console.error('Error fetching products:', error);
     return [];
@@ -49,16 +38,8 @@ async function getProducts(category?: string) {
 
 async function getCategories() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/category`, {
-      next: { revalidate: 3600 }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch categories');
-      return [];
-    }
-
-    return await res.json();
+    const categories = await storage.getCategories();
+    return categories;
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];

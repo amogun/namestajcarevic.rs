@@ -1,17 +1,10 @@
 import { NextResponse } from 'next/server';
+import { storage } from '@/lib/storage';
 
 async function getProducts() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products`, {
-      next: { revalidate: 3600 }
-    });
-
-    if (!res.ok) {
-      console.error('Failed to fetch products for sitemap');
-      return [];
-    }
-
-    return await res.json();
+    const products = await storage.getProducts();
+    return products;
   } catch (error) {
     console.error('Error fetching products for sitemap:', error);
     return [];
@@ -19,7 +12,7 @@ async function getProducts() {
 }
 
 export async function GET() {
-  const baseUrl = 'https://yourdomain.com'; // Replace with your actual domain
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://namestajcarevic.rs';
 
   // Static pages
   const staticPages = [

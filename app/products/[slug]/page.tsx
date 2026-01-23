@@ -6,25 +6,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { normalizeDimensions } from "@/lib/dimensions";
 import { ProductImageGallery } from "@/components/ProductImageGallery";
+import { storage } from "@/lib/storage";
 
 export const revalidate = 3600; // Revalidate every hour
 
 async function getProduct(slug: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${slug}`, {
-      next: { revalidate: 3600 }
-    });
-
-    if (res.status === 404) {
-      return null;
-    }
-
-    if (!res.ok) {
-      console.error('Failed to fetch product');
-      return null;
-    }
-
-    return await res.json();
+    const product = await storage.getProductBySlug(slug);
+    return product || null;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
@@ -60,7 +49,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
 
 // Generate structured data for product
 function generateProductStructuredData(product: any) {
-  const baseUrl = 'https://yourdomain.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://namestajcarevic.rs';
 
   return {
     "@context": "https://schema.org",
@@ -105,7 +94,7 @@ function generateProductStructuredData(product: any) {
 
 // Generate breadcrumb structured data
 function generateBreadcrumbStructuredData(product: any) {
-  const baseUrl = 'https://yourdomain.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://namestajcarevic.rs';
 
   return {
     "@context": "https://schema.org",
