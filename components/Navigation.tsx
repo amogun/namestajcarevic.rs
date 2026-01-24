@@ -13,10 +13,21 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    // Check scroll position after hydration is complete
+    // Use double requestAnimationFrame to ensure this runs after initial render/hydration
+    const checkScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    
+    requestAnimationFrame(() => {
+      requestAnimationFrame(checkScroll);
+    });
+    
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -27,13 +38,17 @@ export function Navigation() {
     { href: "/contact", label: "Kontakt" },
   ];
 
+  // Always render the same initial state to prevent hydration mismatch
+  // Only apply scrolled styles after client-side hydration
+  const navClassName = scrolled
+    ? "bg-brand-accent shadow-lg py-2"
+    : "bg-brand-accent/95 py-3";
+
   return (
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-brand-accent shadow-lg py-2"
-          : "bg-brand-accent/95 py-3"
+        navClassName
       )}
     >
       <div className="container mx-auto px-4 md:px-6">

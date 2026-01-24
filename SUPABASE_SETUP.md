@@ -63,47 +63,135 @@ You have two options to create the database tables:
 3. Click **New query**
 4. Run this SQL to create the tables:
 
+**Note:** If you already have the `products` and `product_images` tables, you can skip those parts and only run the SQL for `orders`, `order_items`, and `contact_messages`.
+
 ```sql
--- Create products table
+-- Create products table (if it doesn't exist)
 CREATE TABLE IF NOT EXISTS products (
-  id SERIAL PRIMARY KEY,
-  slug TEXT NOT NULL UNIQUE,
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  price_cents INTEGER NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'RSD',
-  images JSONB NOT NULL,
-  category TEXT NOT NULL,
-  dimensions JSONB,
-  created_at TIMESTAMP DEFAULT NOW()
+  id UUID NOT NULL DEFAULT gen_random_uuid(),
+  product_name TEXT NOT NULL,
+  price TEXT NULL,
+  description TEXT NULL,
+  dimensions JSONB NULL,
+  materials TEXT NULL,
+  colors TEXT[] NULL,
+  category TEXT NULL,
+  sku TEXT NULL,
+  availability TEXT NULL,
+  additional_specs JSONB NULL,
+  product_url TEXT NULL,
+  image_urls TEXT[] NULL,
+  created_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+  CONSTRAINT products_pkey PRIMARY KEY (id),
+  CONSTRAINT products_sku_key UNIQUE (sku)
+);
+
+-- Create product_images table (if it doesn't exist)
+CREATE TABLE IF NOT EXISTS product_images (
+  id UUID NOT NULL DEFAULT gen_random_uuid(),
+  product_id UUID NULL,
+  image_path TEXT NOT NULL,
+  position INTEGER NOT NULL,
+  is_main BOOLEAN NULL DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+  CONSTRAINT product_images_pkey PRIMARY KEY (id),
+  CONSTRAINT product_images_product_id_fkey FOREIGN KEY (product_id) 
+    REFERENCES products (id) ON DELETE CASCADE
 );
 
 -- Create orders table
 CREATE TABLE IF NOT EXISTS orders (
-  id SERIAL PRIMARY KEY,
+  id UUID NOT NULL DEFAULT gen_random_uuid(),
   customer_name TEXT NOT NULL,
   email TEXT NOT NULL,
   phone TEXT NOT NULL,
   address TEXT NOT NULL,
   total_cents INTEGER NOT NULL,
-  status TEXT NOT NULL DEFAULT 'pending',
-  created_at TIMESTAMP DEFAULT NOW()
+  status TEXT NOT NULL DEFAULT 'pending', -- pending, confirmed, shipped, cancelled
+  delivery_date TEXT NULL, -- Optional delivery date preference
+  notes TEXT NULL, -- Optional customer notes
+  created_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+  CONSTRAINT orders_pkey PRIMARY KEY (id)
 );
 
 -- Create order_items table
 CREATE TABLE IF NOT EXISTS order_items (
-  id SERIAL PRIMARY KEY,
-  order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-  product_id INTEGER NOT NULL REFERENCES products(id),
+  id UUID NOT NULL DEFAULT gen_random_uuid(),
+  order_id UUID NOT NULL,
+  product_id UUID NOT NULL,
   quantity INTEGER NOT NULL,
-  price_cents INTEGER NOT NULL
+  price_cents INTEGER NOT NULL, -- Price at time of order
+  created_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+  CONSTRAINT order_items_pkey PRIMARY KEY (id),
+  CONSTRAINT order_items_order_id_fkey FOREIGN KEY (order_id) 
+    REFERENCES orders (id) ON DELETE CASCADE,
+  CONSTRAINT order_items_product_id_fkey FOREIGN KEY (product_id) 
+    REFERENCES products (id) ON DELETE RESTRICT
+);
+
+-- Create contact_messages table
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id UUID NOT NULL DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'unread', -- unread, read, replied
+  created_at TIMESTAMP WITH TIME ZONE NULL DEFAULT NOW(),
+  CONSTRAINT contact_messages_pkey PRIMARY KEY (id)
 );
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
-CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
+CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);
+CREATE INDEX IF NOT EXISTS idx_dimensions ON products USING GIN (dimensions);
+CREATE INDEX IF NOT EXISTS idx_additional_specs ON products USING GIN (additional_specs);
+CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON product_images(product_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_status ON contact_messages(status);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON contact_messages(created_at);
+
+-- Create function to update updated_at timestamp (if it doesn't exist)
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for products updated_at (if it doesn't exist)
+DROP TRIGGER IF EXISTS update_products_updated_at ON products;
+CREATE TRIGGER update_products_updated_at
+  BEFORE UPDATE ON products
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Create storage bucket for product images (if it doesn't exist)
+-- Note: This will fail if the bucket already exists, which is fine
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('product-images', 'product-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Create storage policy for public access to product images
+-- Note: This will fail if the policy already exists, which is fine
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'storage' 
+    AND tablename = 'objects' 
+    AND policyname = 'Public Access'
+  ) THEN
+    CREATE POLICY "Public Access"
+    ON storage.objects FOR ALL
+    TO public
+    USING (bucket_id = 'product-images');
+  END IF;
+END $$;
 ```
 
 5. Click **Run** to execute the SQL
@@ -180,6 +268,11 @@ With Supabase API, you can easily add:
 - **Error: "column does not exist"**
   - Check that column names match (Supabase uses snake_case: `price_cents`, not `priceCents`)
   - The code automatically converts between camelCase and snake_case
+
+- **Error: "foreign key constraint cannot be implemented - incompatible types: integer and uuid"**
+  - This happens when your `products` table uses UUID but `order_items` tries to use INTEGER for `product_id`
+  - Make sure all ID columns use UUID type to match your existing schema
+  - The SQL in Step 4 now uses UUID for all tables to match your existing `products` table structure
 
 ## Security Notes
 

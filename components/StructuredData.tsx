@@ -20,7 +20,7 @@ export function StructuredData() {
       "+381-64-119-31-83",
       "+381-60-024-42-02"
     ],
-    "email": "namestajcarevic@gmail.com",
+    "email": "carevicnamestaj@gmail.com",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Božidara Milosavljevica 12",

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/hooks/use-cart';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
 
 interface CartIconProps {
   className?: string;
@@ -12,7 +13,14 @@ interface CartIconProps {
 
 export function CartIcon({ className = '' }: CartIconProps) {
   const { getTotalItems } = useCart();
-  const totalItems = getTotalItems();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Only get cart items after mount to prevent hydration mismatch
+  const totalItems = mounted ? getTotalItems() : 0;
 
   return (
     <Link href="/checkout">

@@ -1,5 +1,5 @@
 import { getSupabase } from './supabase';
-import type { Product, InsertProduct, Order, CreateOrderRequest } from '../shared/schema';
+import type { Product, InsertProduct, Order, CreateOrderRequest, ContactMessage, CreateContactMessageRequest } from '../shared/schema';
 
 // Bucket name - can be overridden via environment variable
 const PRODUCT_IMAGES_BUCKET = process.env.SUPABASE_PRODUCT_IMAGES_BUCKET || 'product-images';
@@ -180,6 +180,7 @@ export interface IStorage {
   getProductBySlug(slug: string): Promise<Product | undefined>;
   getCategories(): Promise<string[]>;
   createOrder(order: CreateOrderRequest): Promise<Order>;
+  createContactMessage(message: CreateContactMessageRequest): Promise<ContactMessage>;
   // For seeding
   createProduct(product: InsertProduct): Promise<Product>;
 }
@@ -336,6 +337,8 @@ export class SupabaseStorage implements IStorage {
       address: orderReq.address,
       total_cents: totalCents,
       status: 'pending',
+      delivery_date: orderReq.deliveryDate || null,
+      notes: orderReq.notes || null,
     };
 
     const { data: order, error: orderError } = await supabase
@@ -367,6 +370,29 @@ export class SupabaseStorage implements IStorage {
     // Supabase returns snake_case which matches the database schema
     // Return order as-is (no conversion needed since Order type matches DB structure)
     return order as Order;
+  }
+
+  async createContactMessage(messageReq: CreateContactMessageRequest): Promise<ContactMessage> {
+    const supabase = getSupabase();
+
+    const messageData = {
+      name: messageReq.name,
+      email: messageReq.email,
+      message: messageReq.message,
+      status: 'unread',
+    };
+
+    const { data: message, error: messageError } = await supabase
+      .from('contact_messages')
+      .insert(messageData)
+      .select()
+      .single();
+
+    if (messageError || !message) {
+      throw new Error(`Failed to create contact message: ${messageError?.message || 'Unknown error'}`);
+    }
+
+    return message as ContactMessage;
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {

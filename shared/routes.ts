@@ -48,7 +48,7 @@ export const api = {
       path: "/api/orders",
       input: createOrderSchema,
       responses: {
-        201: z.object({ success: z.boolean(), orderId: z.number() }),
+        201: z.object({ success: z.boolean(), orderId: z.string() }), // UUID is a string
         400: errorSchemas.validation,
         500: errorSchemas.internal,
       },
