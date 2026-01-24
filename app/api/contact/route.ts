@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { storage } from '@/lib/storage';
+import { createContactMessageSchema } from '@/shared/schema';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+
+    // Validate input
+    const input = createContactMessageSchema.parse(body);
+
+    const message = await storage.createContactMessage(input);
+
+    return NextResponse.json(
+      { success: true, messageId: message.id },
+      { status: 201 }
+    );
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          message: error.errors[0].message,
+          field: error.errors[0].path.join('.'),
+        },
+        { status: 400 }
+      );
+    }
+
+    console.error('Contact message creation failed:', error);
+    return NextResponse.json(
+      { message: 'Failed to create contact message' },
+      { status: 500 }
+    );
+  }
+}

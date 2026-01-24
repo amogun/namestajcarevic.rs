@@ -2,7 +2,7 @@
 
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Ime je obavezno"),
@@ -28,6 +29,7 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 
 export default function Contact() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -37,14 +39,34 @@ export default function Contact() {
     },
   });
 
-  const onSubmit = (data: ContactFormValues) => {
-    // This is just a contact form, distinct from orders
-    console.log("Contact form submitted:", data);
-    toast({
-      title: "Poruka poslata",
-      description: "Hvala što ste nas kontaktirali. Odgovorićemo uskoro.",
-    });
-    form.reset();
+  const onSubmit = async (data: ContactFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Došlo je do greške prilikom slanja poruke.');
+      }
+
+      toast({
+        title: "Poruka poslata",
+        description: "Hvala što ste nas kontaktirali. Odgovorićemo uskoro.",
+      });
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Greška",
+        description: error instanceof Error ? error.message : "Došlo je do greške prilikom slanja poruke.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -172,9 +194,11 @@ export default function Contact() {
 
                 <button
                   type="submit"
-                  className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-all hover:shadow-lg"
+                  disabled={isSubmitting}
+                  className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Pošalji
+                  {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {isSubmitting ? "Šalje se..." : "Pošalji"}
                 </button>
               </form>
             </Form>
