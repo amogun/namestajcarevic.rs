@@ -6,10 +6,14 @@
 
 :root {
   /* Core brand colors - Furniture Salon Aesthetic */
-  --brand-brown: 26 29% 32%;      /* #6b4f3a - Primary Wood Tone */
-  --brand-beige: 33 42% 94%;      /* #f7f1ea - Background/Light */
-  --brand-accent: 14 18% 14%;     /* #2a1f17 - Dark Accent/Text */
-  --brand-gold: 35 30% 50%;       /* #a69159 - Subtle Gold Accent */
+  --brand-brown: 26 29% 32%;
+  /* #6b4f3a - Primary Wood Tone */
+  --brand-beige: 33 42% 94%;
+  /* #f7f1ea - Background/Light */
+  --brand-accent: 14 18% 14%;
+  /* #2a1f17 - Dark Accent/Text */
+  --brand-gold: 35 30% 50%;
+  /* #a69159 - Subtle Gold Accent */
 
   /* Shadcn/Tailwind mapping */
   --background: 33 42% 94%;
@@ -51,11 +55,18 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-serif);
     @apply font-semibold tracking-tight;
   }
@@ -65,9 +76,11 @@
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
   @apply bg-background;
 }
+
 ::-webkit-scrollbar-thumb {
   @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
 }
@@ -82,5 +95,93 @@
 }
 
 .text-shadow {
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* CookieYes Banner Custom Styling */
+#cookieyes-banner,
+.cky-consent-container {
+  font-family: var(--font-sans) !important;
+}
+
+/* Banner box styling */
+.cky-consent-container .cky-consent-bar {
+  background-color: #ffffff !important;
+  border: 1px solid hsl(26 15% 85%) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 12px !important;
+}
+
+/* Title and text */
+.cky-consent-container .cky-title {
+  font-family: var(--font-serif) !important;
+  color: #2a1f17 !important;
+  font-weight: 600 !important;
+}
+
+.cky-consent-container .cky-description,
+.cky-consent-container p {
+  color: #4a4a4a !important;
+  line-height: 1.6 !important;
+}
+
+/* Accept button - Primary brown */
+.cky-consent-container .cky-btn-accept,
+.cky-consent-container button[data-cky-tag="accept-button"] {
+  background-color: #6b4f3a !important;
+  color: #f7f1ea !important;
+  border: none !important;
+  padding: 10px 24px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.cky-consent-container .cky-btn-accept:hover {
+  background-color: #594132 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Reject/Settings button - Outline style */
+.cky-consent-container .cky-btn-reject,
+.cky-consent-container .cky-btn-settings,
+.cky-consent-container button[data-cky-tag="reject-button"],
+.cky-consent-container button[data-cky-tag="settings-button"] {
+  background-color: transparent !important;
+  color: #6b4f3a !important;
+  border: 1px solid #6b4f3a !important;
+  padding: 10px 24px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.cky-consent-container .cky-btn-reject:hover,
+.cky-consent-container .cky-btn-settings:hover {
+  background-color: #f7f1ea !important;
+}
+
+/* Settings modal */
+.cky-modal {
+  font-family: var(--font-sans) !important;
+}
+
+.cky-modal .cky-modal-title {
+  font-family: var(--font-serif) !important;
+  color: #2a1f17 !important;
+}
+
+/* Toggles/switches */
+.cky-switch input:checked+.cky-slider {
+  background-color: #6b4f3a !important;
+}
+
+/* Links */
+.cky-consent-container a {
+  color: #6b4f3a !important;
+  text-decoration: underline !important;
+}
+
+.cky-consent-container a:hover {
+  color: #594132 !important;
 }

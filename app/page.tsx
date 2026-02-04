@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Star, Clock, Truck } from "lucide-react";
 import { type Product } from "@shared/schema";
 import { storage } from "@/lib/storage";
@@ -29,10 +30,12 @@ export default async function Home() {
       <section className="relative h-[90vh] flex items-center overflow-hidden">
         {/* Living room interior warm wood tones */}
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
             alt="Modern warm living room"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
         </div>
@@ -40,7 +43,7 @@ export default async function Home() {
         <div className="container mx-auto px-4 md:px-6 relative z-10 text-white">
           <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <h1 className="font-serif text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              Elegancija koja <br/> oplemenjuje dom
+              Elegancija koja <br /> oplemenjuje dom
             </h1>
             <p className="text-lg md:text-xl text-white/90 mb-10 font-light leading-relaxed max-w-lg">
               Nameštaj Carevic salon nameštaja donosi vrhunski dizajn i kvalitet u Vaš životni prostor. Tradicija duga 20 godina u srcu Kragujevca.
@@ -136,12 +139,13 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div className="relative">
               <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full blur-3xl" />
-              <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]">
                 {/* Showroom interior */}
-                <img
-                  src="/home-showroom.png"
+                <Image
+                  src="/showroom.jpg"
                   alt="Nameštaj Carevic Showroom"
-                  className="w-full h-auto transform hover:scale-105 transition-transform duration-700"
+                  fill
+                  className="object-cover transform hover:scale-105 transition-transform duration-700"
                 />
               </div>
             </div>

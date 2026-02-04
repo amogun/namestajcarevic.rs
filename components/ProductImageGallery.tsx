@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
+import Image from "next/image";
 
 interface ProductImageGalleryProps {
   images: string[];
@@ -65,14 +66,17 @@ export function ProductImageGallery({ images, title }: ProductImageGalleryProps)
       <div className="space-y-4">
         {/* Main Image with Navigation Arrows */}
         <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 group cursor-pointer" onClick={openFullscreen}>
-          <img
+          <Image
             src={images[activeImageIndex]}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            priority={true}
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
 
           {/* Fullscreen Icon */}
-          <div className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
             <Maximize2 size={18} className="text-white" />
           </div>
 
@@ -104,7 +108,7 @@ export function ProductImageGallery({ images, title }: ProductImageGalleryProps)
 
           {/* Image Counter */}
           {images.length > 1 && (
-            <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+            <div className="absolute bottom-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm z-10">
               {activeImageIndex + 1} / {images.length}
             </div>
           )}
@@ -117,16 +121,17 @@ export function ProductImageGallery({ images, title }: ProductImageGalleryProps)
               <button
                 key={index}
                 onClick={() => selectImage(index)}
-                className={`relative aspect-square rounded-lg overflow-hidden bg-gray-100 transition-all ${
-                  index === activeImageIndex
+                className={`relative aspect-square rounded-lg overflow-hidden bg-gray-100 transition-all ${index === activeImageIndex
                     ? 'ring-2 ring-primary ring-offset-2'
                     : 'opacity-70 hover:opacity-100'
-                }`}
+                  }`}
               >
-                <img
+                <Image
                   src={image}
                   alt={`${title} - slika ${index + 2}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 25vw, 15vw"
                 />
               </button>
             ))}
@@ -150,19 +155,24 @@ export function ProductImageGallery({ images, title }: ProductImageGalleryProps)
           </button>
 
           {/* Main Image Container */}
-          <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={images[activeImageIndex]}
-              alt={title}
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-            />
+          <div className="relative w-full h-full flex items-center justify-center p-4 md:p-10" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full h-full max-w-7xl max-h-[90vh]">
+              <Image
+                src={images[activeImageIndex]}
+                alt={title}
+                fill
+                className="object-contain"
+                sizes="100vw"
+                priority={true}
+              />
+            </div>
 
             {/* Navigation Arrows */}
             {images.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full p-4 transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full p-4 transition-colors z-20"
                   aria-label="Previous image"
                 >
                   <ChevronLeft size={24} className="text-white" />

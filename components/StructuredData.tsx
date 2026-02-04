@@ -2,25 +2,25 @@ export function StructuredData() {
   const businessData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "@id": "https://yourdomain.com/#organization",
+    "@id": "https://namestajcarevic.rs/#organization",
     "name": "Nameštaj Carevic",
     "alternateName": "Salon Nameštaja Carevic",
     "description": "Nameštaj Carevic - salon nameštaja u Kragujevcu. Kvalitetan nameštaj za dom, tradicionalno zanatstvo, 20+ godina iskustva.",
-    "url": "https://yourdomain.com",
+    "url": "https://namestajcarevic.rs",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://yourdomain.com/logo.svg",
+      "url": "https://namestajcarevic.rs/logo.svg",
       "width": 200,
       "height": 80
     },
     "image": [
-      "https://yourdomain.com/logo.svg"
+      "https://namestajcarevic.rs/logo.svg"
     ],
     "telephone": [
       "+381-64-119-31-83",
       "+381-60-024-42-02"
     ],
-    "email": "carevicnamestaj@gmail.com",
+    "email": ["salon@namestajcarevic.rs", "carevicnamestaj@gmail.com"],
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Božidara Milosavljevica 12",
@@ -124,17 +124,17 @@ export function StructuredData() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Nameštaj Carevic",
-    "url": "https://yourdomain.com",
+    "url": "https://namestajcarevic.rs",
     "description": "Salon nameštaja u Kragujevcu sa 20+ godina tradicije",
     "inLanguage": "sr-RS",
     "publisher": {
-      "@id": "https://yourdomain.com/#organization"
+      "@id": "https://namestajcarevic.rs/#organization"
     },
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://yourdomain.com/catalog?search={search_term_string}"
+        "urlTemplate": "https://namestajcarevic.rs/catalog?search={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     }

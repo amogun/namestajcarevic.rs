@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { type Product } from "@shared/schema";
 import { AddToCartButton } from "./AddToCartButton";
@@ -17,10 +18,12 @@ export function ProductCard({ product }: ProductCardProps) {
         <Link href={`/products/${product.slug}`} className="block">
           <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
             {mainImage ? (
-              <img
+              <Image
                 src={mainImage}
                 alt={product.title}
+                fill
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">

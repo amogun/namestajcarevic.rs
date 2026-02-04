@@ -54,6 +54,10 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="shrink-0" />
+                <span>salon@namestajcarevic.rs</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Mail size={18} className="shrink-0" />
                 <span>carevicnamestaj@gmail.com</span>
               </li>
             </ul>
@@ -84,9 +88,10 @@ export function Footer() {
             <p>© {new Date().getFullYear()} Nameštaj Carevic. Sva prava zadržana.</p>
             <p className="text-primary-foreground/40">PIB: 105589582 | MB: 61812504</p>
           </div>
-          <div className="flex space-x-6">
-            <a href="#" className="hover:text-white transition-colors">Politika Privatnosti</a>
-            <a href="#" className="hover:text-white transition-colors">Uslovi Korišćenja</a>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Politika Privatnosti</Link>
+            <Link href="/terms-of-use" className="hover:text-white transition-colors">Uslovi Korišćenja</Link>
+            <Link href="/cookie-policy" className="hover:text-white transition-colors">Politika Kolačića</Link>
           </div>
         </div>
       </div>

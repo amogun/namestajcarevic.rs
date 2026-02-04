@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { QueryClientProviderWrapper } from '@/lib/queryClient';
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://yourdomain.com'), // Replace with your actual domain
+  metadataBase: new URL('https://namestajcarevic.rs'),
   alternates: {
     canonical: '/',
   },
@@ -66,6 +67,10 @@ export const metadata: Metadata = {
   },
 };
 
+import Analytics from '@/components/Analytics';
+
+// ... (existing code)
+
 export default function RootLayout({
   children,
 }: {
@@ -98,6 +103,9 @@ export default function RootLayout({
         <meta name="dcterms.rights" content="© 2024 Nameštaj Carevic. Sva prava zadržana." />
       </head>
       <body className="font-sans">
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
         <QueryClientProviderWrapper>
           <CartProvider>
             <TooltipProvider>
