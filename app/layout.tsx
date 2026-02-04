@@ -83,8 +83,6 @@ export default function RootLayout({
         <meta name="theme-color" content="#6b4f3a" />
         <meta name="msapplication-TileColor" content="#6b4f3a" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         {/* Preconnect to external domains for performance */}
