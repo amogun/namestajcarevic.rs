@@ -153,7 +153,7 @@ function mapDbProductToProduct(dbProduct: any): Product {
 
     return {
       id: dbProduct.id,
-      slug: generateSlug(dbProduct.product_name, dbProduct.product_url),
+      slug: dbProduct.slug || generateSlug(dbProduct.product_name, dbProduct.product_url),
       title: dbProduct.product_name || '',
       description: dbProduct.description || '',
       priceCents: parsePriceToCents(dbProduct.price),
@@ -178,6 +178,7 @@ function mapDbProductToProduct(dbProduct: any): Product {
 export interface IStorage {
   getProducts(category?: string): Promise<Product[]>;
   getProductBySlug(slug: string): Promise<Product | undefined>;
+  getProductsByIds(ids: string[]): Promise<Product[]>;
   getCategories(): Promise<string[]>;
   createOrder(order: CreateOrderRequest): Promise<Order>;
   createContactMessage(message: CreateContactMessageRequest): Promise<ContactMessage>;
@@ -236,47 +237,41 @@ export class SupabaseStorage implements IStorage {
   async getProductBySlug(slug: string): Promise<Product | undefined> {
     const supabase = getSupabase();
 
-    // Since we don't have a slug column, we try to match by product_url first
-    // If product_url contains the slug, use that; otherwise fetch all and filter
-    // TODO: Consider adding a slug column to the database for better performance
-
-    // First, try to find by product_url (if it matches the slug pattern)
-    const urlSlug = `/proizvod/${slug}`;
-    const { data: urlMatch, error: urlError } = await supabase
-      .from('products')
-      .select('*, product_images ( image_path, position, is_main )')
-      .eq('product_url', urlSlug)
-      .maybeSingle();
-
-    if (!urlError && urlMatch) {
-      return mapDbProductToProduct(urlMatch);
-    }
-
-    // Fallback: fetch all products and filter by generated slug
-    // Note: This is less efficient but works if product_url doesn't match
     const { data, error } = await supabase
       .from('products')
-      .select('*, product_images ( image_path, position, is_main )');
+      .select('*, product_images ( image_path, position, is_main )')
+      .eq('slug', slug)
+      .maybeSingle();
 
     if (error) {
+      console.error('Error fetching product by slug:', error);
+      throw new Error(`Failed to fetch product: ${error.message}`);
+    }
+
+    if (!data) {
+      return undefined;
+    }
+
+    return mapDbProductToProduct(data);
+  }
+
+  async getProductsByIds(ids: string[]): Promise<Product[]> {
+    if (!ids.length) return [];
+
+    const supabase = getSupabase();
+    console.log('[Storage] Fetching products by IDs:', ids);
+
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, product_images ( image_path, position, is_main )')
+      .in('id', ids);
+
+    if (error) {
+      console.error('Error fetching products by IDs:', error);
       throw new Error(`Failed to fetch products: ${error.message}`);
     }
 
-    if (!data || data.length === 0) {
-      return undefined;
-    }
-
-    // Find product by matching generated slug
-    const product = data.find(p => {
-      const generatedSlug = generateSlug(p.product_name, p.product_url);
-      return generatedSlug === slug;
-    });
-
-    if (!product) {
-      return undefined;
-    }
-
-    return mapDbProductToProduct(product);
+    return (data || []).map(mapDbProductToProduct);
   }
 
   async getCategories(): Promise<string[]> {

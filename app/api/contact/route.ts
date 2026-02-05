@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { storage } from '@/lib/storage';
 import { createContactMessageSchema } from '@/shared/schema';
+import { sendContactReplyEmail } from '@/lib/resend';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +12,17 @@ export async function POST(request: NextRequest) {
     const input = createContactMessageSchema.parse(body);
 
     const message = await storage.createContactMessage(input);
+
+    // Send auto-reply email (async)
+    sendContactReplyEmail({
+      customerName: message.name,
+      email: message.email,
+      message: message.message,
+      messageId: message.id, // Pass UUID string directly
+      createdAt: message.created_at ? new Date(message.created_at) : new Date(),
+    }).catch((error) => {
+      console.error('[Contact API] Failed to send reply email:', error);
+    });
 
     return NextResponse.json(
       { success: true, messageId: message.id },

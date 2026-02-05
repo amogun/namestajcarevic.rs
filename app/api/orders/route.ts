@@ -2,24 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { storage } from '@/lib/storage';
 import { createOrderSchema } from '@/shared/schema';
-
-async function sendOrderEmail(order: any) {
-  // If env vars are set, use nodemailer, otherwise just log
-  if (process.env.EMAIL_SMTP && process.env.SALON_EMAIL) {
-    try {
-      // Very basic SMTP setup parsing (assuming standard connection string or similar)
-      // For now, let's just log that we would send it
-      console.log(`[EMAIL] To Customer (${order.email}) & Salon (${process.env.SALON_EMAIL}): Order #${order.id} received for ${order.totalCents / 100} RSD.`);
-
-      // Actual implementation would go here with nodemailer.createTransport(...)
-    } catch (e) {
-      console.error('Failed to send email:', e);
-    }
-  } else {
-    console.log(`[MOCK EMAIL] To: ${order.email}, Subject: Potvrda porudžbine #${order.id}`);
-    console.log(`[MOCK EMAIL] To Salon: Nova porudžbina #${order.id}`);
-  }
-}
+import { sendOrderConfirmationEmail } from '@/lib/resend';
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,8 +13,35 @@ export async function POST(request: NextRequest) {
 
     const order = await storage.createOrder(input);
 
-    // Send email (async, don't block response)
-    sendOrderEmail(order).catch(console.error);
+    // Prepare order items for email with real product details
+    const productIds = input.items.map(item => item.productId);
+    let productsMap = new Map();
+
+    try {
+      const products = await storage.getProductsByIds(productIds);
+      products.forEach(p => productsMap.set(p.id, p));
+    } catch (e) {
+      console.error('[Orders API] Failed to fetch products for email:', e);
+      // Continue with placeholders if fetch fails
+    }
+
+    const orderItems = input.items.map((item) => {
+      const product = productsMap.get(item.productId);
+      // Use price from valid product or 0 as fallback
+      // ideally we should have price snapshots in order_items but for now we look up current price
+      return {
+        title: product ? product.title : 'Proizvod',
+        quantity: item.quantity,
+        priceCents: product ? product.priceCents : 0,
+      };
+    });
+
+    // Send order confirmation email (async, don't block response)
+    // Now safe to call as it catches errors internally
+    sendOrderConfirmationEmail({
+      order: order,
+      items: orderItems,
+    });
 
     return NextResponse.json(
       { success: true, orderId: order.id },
