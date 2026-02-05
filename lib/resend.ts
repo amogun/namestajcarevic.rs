@@ -13,6 +13,12 @@ const getResend = () => {
     return new Resend(apiKey);
 };
 
+const SALON_BCC_LIST = [
+    'carevicnamestaj@gmail.com',
+    'radecarevic2018@gmail.com',
+    'dcarevic.kg@gmail.com'
+];
+
 interface OrderEmailData {
     order: Order;
     items: Array<{
@@ -46,11 +52,12 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
         const result = await resend.emails.send({
             from: 'ponuda@naruci.namestajcarevic.online',
             to: data.order.email,
+            bcc: SALON_BCC_LIST,
             subject: `Potvrda prijema narudžbine #${data.order.id}`,
             html: htmlContent,
         });
 
-        console.log(`[RESEND] Order confirmation email sent to ${data.order.email}:`, result);
+        console.log(`[RESEND] Order confirmation email sent to ${data.order.email} (BCC'd salon):`, result);
         return result;
     } catch (error) {
         console.error('[RESEND] Failed to send order confirmation email:', error);
@@ -74,11 +81,12 @@ export async function sendContactReplyEmail(data: ContactEmailData) {
         const result = await resend.emails.send({
             from: 'kontakt@naruci.namestajcarevic.online',
             to: data.email,
+            bcc: SALON_BCC_LIST,
             subject: `Potvrda prijema poruke #${data.messageId}`,
             html: htmlContent,
         });
 
-        console.log(`[RESEND] Contact reply email sent to ${data.email}:`, result);
+        console.log(`[RESEND] Contact reply email sent to ${data.email} (BCC'd salon):`, result);
         return result;
     } catch (error) {
         console.error('[RESEND] Failed to send contact reply email:', error);
