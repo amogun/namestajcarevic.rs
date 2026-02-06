@@ -68,6 +68,7 @@ export const metadata: Metadata = {
 };
 
 import Analytics from '@/components/Analytics';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 import Script from 'next/script';
 
 const COOKIEYES_ID = '54a330c937a2ce8efd4bb84ca4777f12';
@@ -118,6 +119,7 @@ export default function RootLayout({
             </TooltipProvider>
           </CartProvider>
         </QueryClientProviderWrapper>
+        <VercelAnalytics />
       </body>
     </html>
   );
