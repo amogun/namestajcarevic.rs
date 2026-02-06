@@ -68,8 +68,9 @@ export const metadata: Metadata = {
 };
 
 import Analytics from '@/components/Analytics';
+import Script from 'next/script';
 
-// ... (existing code)
+const COOKIEYES_ID = '54a330c937a2ce8efd4bb84ca4777f12';
 
 export default function RootLayout({
   children,
@@ -79,6 +80,11 @@ export default function RootLayout({
   return (
     <html lang="sr" className={`${inter.variable} ${playfair.variable}`}>
       <head>
+        <Script
+          id="cookieyes"
+          src={`https://cdn-cookieyes.com/client_data/${COOKIEYES_ID}/script.js`}
+          strategy="beforeInteractive"
+        />
         <StructuredData />
         <meta name="theme-color" content="#6b4f3a" />
         <meta name="msapplication-TileColor" content="#6b4f3a" />

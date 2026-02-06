@@ -36,12 +36,17 @@ export async function POST(request: NextRequest) {
       };
     });
 
-    // Send order confirmation email (async, don't block response)
+    // Send order confirmation email (async, but await to ensure it sends in serverless)
     // Now safe to call as it catches errors internally
-    sendOrderConfirmationEmail({
-      order: order,
-      items: orderItems,
-    });
+    try {
+      const emailResult = await sendOrderConfirmationEmail({
+        order: order,
+        items: orderItems,
+      });
+      console.log('[Orders API] Email result:', emailResult);
+    } catch (e) {
+      console.error('[Orders API] Final catch for email sending:', e);
+    }
 
     return NextResponse.json(
       { success: true, orderId: order.id },

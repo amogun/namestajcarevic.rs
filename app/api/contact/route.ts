@@ -13,16 +13,19 @@ export async function POST(request: NextRequest) {
 
     const message = await storage.createContactMessage(input);
 
-    // Send auto-reply email (async)
-    sendContactReplyEmail({
-      customerName: message.name,
-      email: message.email,
-      message: message.message,
-      messageId: message.id, // Pass UUID string directly
-      createdAt: message.created_at ? new Date(message.created_at) : new Date(),
-    }).catch((error) => {
+    // Send auto-reply email (await to ensure it sends in serverless)
+    try {
+      const emailResult = await sendContactReplyEmail({
+        customerName: message.name,
+        email: message.email,
+        message: message.message,
+        messageId: message.id, // Pass UUID string directly
+        createdAt: message.created_at ? new Date(message.created_at) : new Date(),
+      });
+      console.log('[Contact API] Email result:', emailResult);
+    } catch (error) {
       console.error('[Contact API] Failed to send reply email:', error);
-    });
+    }
 
     return NextResponse.json(
       { success: true, messageId: message.id },

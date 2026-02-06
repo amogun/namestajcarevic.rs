@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 // IDs
 const GA_MEASUREMENT_ID = 'G-WQZ33GHY0X';
 const META_PIXEL_ID = '1661534305208649';
-const COOKIEYES_ID = '54a330c937a2ce8efd4bb84ca4777f12';
 
 declare global {
     interface Window {
@@ -29,14 +28,7 @@ export default function Analytics() {
 
     return (
         <>
-            {/* 1. CookieYes - MUST BE LOADED FIRST */}
-            <Script
-                id="cookieyes"
-                src={`https://cdn-cookieyes.com/client_data/${COOKIEYES_ID}/script.js`}
-                strategy="beforeInteractive"
-            />
-
-            {/* 2. Google Analytics 4 */}
+            {/* 1. Google Analytics 4 */}
             <Script
                 strategy="afterInteractive"
                 src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}

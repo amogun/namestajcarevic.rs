@@ -62,7 +62,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
     } catch (error) {
         console.error('[RESEND] Failed to send order confirmation email:', error);
         // Don't throw, just log to prevent breaking the order flow
-        return { error: 'Failed to send email' };
+        return { error: error instanceof Error ? error.message : String(error) };
     }
 }
 
@@ -91,6 +91,6 @@ export async function sendContactReplyEmail(data: ContactEmailData) {
     } catch (error) {
         console.error('[RESEND] Failed to send contact reply email:', error);
         // Don't throw, just log
-        return { error: 'Failed to send email' };
+        return { error: error instanceof Error ? error.message : String(error) };
     }
 }
