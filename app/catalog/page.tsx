@@ -1,15 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { Search, SlidersHorizontal } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CatalogFilter } from "@/components/CatalogFilter";
 import Link from "next/link";
 import { storage } from '@/lib/storage';
 
@@ -53,12 +45,27 @@ interface CatalogPageProps {
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const resolvedSearchParams = await searchParams;
   const categoryParam = typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined;
+  const searchQuery = typeof resolvedSearchParams.search === 'string' ? resolvedSearchParams.search.trim().toLowerCase() : '';
 
   // Fetch data server-side
   const [products, categories] = await Promise.all([
     getProducts(categoryParam),
     getCategories()
   ]);
+
+  // Apply search filter server-side
+  const filteredProducts = searchQuery
+    ? products.filter((product: any) => {
+        const title = (product.title || '').toLowerCase();
+        const description = (product.description || '').toLowerCase();
+        const category = (product.category || '').toLowerCase();
+        return (
+          title.includes(searchQuery) ||
+          description.includes(searchQuery) ||
+          category.includes(searchQuery)
+        );
+      })
+    : products;
 
   // Build categories list with "all" option
   const categoryOptions = [
@@ -84,52 +91,23 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-sm border-b border-border/50 shadow-sm">
-        <div className="container mx-auto px-4 md:px-6 py-6">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Pretraži proizvode..."
-                className="pl-10"
-                disabled // Client-side search disabled for ISR - could be implemented with client component
-              />
-            </div>
-
-            {/* Category Filter */}
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              <Select defaultValue={selectedCategory}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Izaberite kategoriju" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      <Link href={option.value === "all" ? "/catalog" : `/catalog?category=${option.value}`}>
-                        {option.label}
-                      </Link>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Results count */}
-            <div className="text-sm text-muted-foreground">
-              {products.length} proizvoda
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Filters - Client Component */}
+      <CatalogFilter
+        categories={categoryOptions}
+        selectedCategory={selectedCategory}
+        totalProducts={filteredProducts.length}
+        allProducts={products.map((p: any) => ({
+          id: p.id,
+          title: p.title || '',
+          category: p.category || null,
+        }))}
+      />
 
       {/* Products Grid */}
       <div className="container mx-auto px-4 md:px-6 py-12">
-        {products.length > 0 ? (
+        {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {products.map((product: any) => (
+            {filteredProducts.map((product: any) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
