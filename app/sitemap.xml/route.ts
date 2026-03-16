@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { storage } from '@/lib/storage';
+import { CATEGORIES } from '@/lib/categoryConfig';
 
 async function getProducts() {
   try {
@@ -42,6 +43,14 @@ export async function GET() {
     },
   ];
 
+  // Category pages
+  const categoryPages = CATEGORIES.map((cat) => ({
+    url: `${baseUrl}/kategorija/${cat.slug}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.85,
+  }));
+
   // Dynamic product pages
   const products = await getProducts();
   const productPages = products.map((product: any) => ({
@@ -51,7 +60,7 @@ export async function GET() {
     priority: 0.8,
   }));
 
-  const allPages = [...staticPages, ...productPages];
+  const allPages = [...staticPages, ...categoryPages, ...productPages];
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

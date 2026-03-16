@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Facebook, Instagram, MapPin, Phone, Mail } from "lucide-react";
+import { CATEGORIES } from "@/lib/categoryConfig";
 
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
           {/* Brand */}
           <div className="space-y-4">
             <div>
@@ -33,6 +34,20 @@ export function Footer() {
               <li><Link href="/catalog" className="hover:text-white transition-colors">Katalog Proizvoda</Link></li>
               <li><Link href="/about" className="hover:text-white transition-colors">O Nama</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Kontakt</Link></li>
+            </ul>
+          </div>
+
+          {/* Nameštaj Categories */}
+          <div>
+            <h4 className="font-serif text-lg font-medium mb-6">Nameštaj</h4>
+            <ul className="space-y-3 text-sm text-primary-foreground/70">
+              {CATEGORIES.map((cat) => (
+                <li key={cat.slug}>
+                  <Link href={`/kategorija/${cat.slug}`} className="hover:text-white transition-colors">
+                    {cat.displayName}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

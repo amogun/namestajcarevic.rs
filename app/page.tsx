@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowRight, Star, Clock, Truck } from "lucide-react";
 import { type Product } from "@shared/schema";
 import { storage } from "@/lib/storage";
+import { CATEGORIES } from "@/lib/categoryConfig";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -129,6 +130,49 @@ export default async function Home() {
                 Pogledaj sve proizvode
               </button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Category Showcase */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-14">
+            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-2">Kategorije</p>
+            <h2 className="font-serif text-4xl font-bold text-primary">Istražite naš nameštaj</h2>
+            <p className="text-muted-foreground text-lg mt-4 max-w-2xl mx-auto">
+              Pronađite savršen komad nameštaja iz naše bogate ponude. Svaki komad je pažljivo odabran da unese eleganciju u Vaš dom.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/kategorija/${cat.slug}`}
+                className="group relative rounded-2xl overflow-hidden aspect-[4/3] shadow-md hover:shadow-2xl transition-all duration-500"
+              >
+                <Image
+                  src={cat.image}
+                  alt={cat.displayName}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-black/90 transition-colors duration-500" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="font-serif text-2xl font-bold text-white mb-1">
+                    {cat.displayName}
+                  </h3>
+                  <p className="text-white/80 text-sm mb-3">
+                    {cat.shortDescription}
+                  </p>
+                  <span className="inline-flex items-center gap-1.5 text-white/90 text-sm font-medium group-hover:gap-3 transition-all duration-300">
+                    Pogledaj
+                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
