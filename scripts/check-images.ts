@@ -24,7 +24,7 @@ async function run() {
               console.log(`[${res.status}] NOT FOUND: "${product.title}" -> ${img}`);
               notFoundCount++;
             }
-          } catch (e) {
+          } catch (e: any) {
             console.log(`[FETCH ERROR] "${product.title}" -> ${img} -> ${e.message}`);
             notFoundCount++;
           }
