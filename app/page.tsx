@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Star, Clock, Truck } from "lucide-react";
@@ -20,11 +21,70 @@ async function getFeaturedProducts() {
   }
 }
 
+const homepageFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Gde se nalazi salon nameštaja Carevic?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Salon nameštaja Carevic se nalazi u Kragujevcu, Srbija. Na raspolaganju vam je preko 500m² izložbenog prostora gde možete pogledati nameštaj uživo.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Koje vrste nameštaja prodajete?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Prodajemo nameštaj za dnevnu sobu (trosedi, dvosedi, fotelje, ugaone garniture), spavaću sobu (kreveti) i trpezariju. U ponudi su TDF garniture i sve vrste sedećih garnitura.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Da li vršite isporuku nameštaja?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Da, vršimo isporuku nameštaja. Dostava za Kragujevac je besplatna. Za ostala mesta u Srbiji dostava je dostupna — kontaktirajte nas za više informacija.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Koja je garancija na nameštaj?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Na sav nameštaj dajemo garanciju od 2 godine.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Kakvo je radno vreme salona?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Radno vreme salona je radnim danima od 10:00 do 19:00, a subotom od 10:00 do 14:00. Nedeljom ne radimo.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Koliko dugo posluje salon Carevic?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Salon nameštaja Carevic posluje više od 20 godina i jedna je od najpoznatijih porodičnih firmi za prodaju nameštaja u Kragujevcu.",
+      },
+    },
+  ],
+};
+
 export default async function Home() {
   const featuredProducts = await getFeaturedProducts();
 
   return (
     <div className="min-h-screen bg-background font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageFaqSchema) }}
+      />
       <Navigation />
 
       {/* Hero Section */}
@@ -208,6 +268,28 @@ export default async function Home() {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 md:px-6 max-w-3xl">
+          <div className="text-center mb-12">
+            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-2">Pitanja i odgovori</p>
+            <h2 className="font-serif text-4xl font-bold text-primary">Često postavljana pitanja</h2>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {homepageFaqSchema.mainEntity.map((item, index) => (
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger className="text-left font-serif text-base md:text-lg text-primary">
+                  {item.name}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed">
+                  {item.acceptedAnswer.text}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 

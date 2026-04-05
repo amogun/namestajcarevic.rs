@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ArrowLeft } from "lucide-react";
@@ -48,6 +49,60 @@ export async function generateMetadata({
   };
 }
 
+function generateCategoryFaqSchema(category: CategoryConfig) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `Koji ${category.displayName.toLowerCase()} modeli su dostupni u salonu Carevic?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${category.description} Posetite naš salon u Kragujevcu ili pregledajte katalog na sajtu.`,
+        },
+      },
+      {
+        "@type": "Question",
+        "name": `Da li vršite dostavu ${category.displayName.toLowerCase()}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Da, vršimo dostavu ${category.displayName.toLowerCase()} po Kragujevcu besplatno, a dostava je dostupna i za ostala mesta u Srbiji. Kontaktirajte nas za više detalja.`,
+        },
+      },
+      {
+        "@type": "Question",
+        "name": `Koja je garancija na ${category.displayName.toLowerCase()}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Na sve ${category.displayName.toLowerCase()} iz naše ponude dajemo garanciju od 2 godine.`,
+        },
+      },
+    ],
+  };
+}
+
+function generateCollectionPageSchema(category: CategoryConfig, products: any[]) {
+  const baseUrl = 'https://namestajcarevic.rs';
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": `${category.displayName} - Nameštaj Carevic`,
+    "description": category.description,
+    "url": `${baseUrl}/kategorija/${category.slug}`,
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": products.length,
+      "itemListElement": products.map((product: any, index: number) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": product.title,
+        "url": `${baseUrl}/products/${product.slug}`,
+      })),
+    },
+  };
+}
+
 async function getCategoryProducts(categoryName: string) {
   try {
     const products = await storage.getProducts(categoryName);
@@ -71,9 +126,19 @@ export default async function CategoryPage({
   }
 
   const products = await getCategoryProducts(category.name);
+  const collectionPageSchema = generateCollectionPageSchema(category, products);
+  const categoryFaqSchema = generateCategoryFaqSchema(category);
 
   return (
     <div className="min-h-screen bg-background font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryFaqSchema) }}
+      />
       <Navigation />
 
       {/* Hero Section */}
@@ -186,6 +251,28 @@ export default async function CategoryPage({
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 md:px-6 max-w-3xl">
+          <div className="text-center mb-12">
+            <p className="text-primary font-medium tracking-widest uppercase text-sm mb-2">Pitanja i odgovori</p>
+            <h2 className="font-serif text-4xl font-bold text-primary">Često postavljana pitanja</h2>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {categoryFaqSchema.mainEntity.map((item, index) => (
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger className="text-left font-serif text-base md:text-lg text-primary">
+                  {item.name}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed">
+                  {item.acceptedAnswer.text}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 

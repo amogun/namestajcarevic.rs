@@ -19,7 +19,7 @@ Allow: *.svg
 Allow: *.ico
 
 # Sitemap
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://namestajcarevic.rs/sitemap.xml
 
 # Crawl-delay (optional, for slower bots)
 Crawl-delay: 1`;

@@ -36,13 +36,23 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
     };
   }
 
+  const ogImage = product.images?.[0]
+    ? { url: product.images[0], width: 1200, height: 630, alt: product.title }
+    : { url: '/home-showroom.jpg', width: 1200, height: 630, alt: 'Nameštaj Carevic' };
+
   return {
     title: `${product.title} - Nameštaj Carevic`,
     description: product.description || `Pogledajte ${product.title} u našem katalogu. Kvalitetan nameštaj po povoljnim cenama.`,
     openGraph: {
       title: `${product.title} - Nameštaj Carevic`,
       description: product.description || `Pogledajte ${product.title} u našem katalogu.`,
-      images: product.images?.[0] ? [{ url: product.images[0] }] : [],
+      images: [ogImage],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.title} - Nameštaj Carevic`,
+      description: product.description || `Pogledajte ${product.title} u našem katalogu.`,
+      images: [ogImage.url],
     },
   };
 }
@@ -74,6 +84,41 @@ function generateProductStructuredData(product: any) {
       "seller": {
         "@type": "Organization",
         "name": "Nameštaj Carevic"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "RSD"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "RS"
+        },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 1,
+            "maxValue": 30,
+            "unitCode": "DAY"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 1,
+            "maxValue": 5,
+            "unitCode": "DAY"
+          }
+        }
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "RS",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 14,
+        "returnMethod": "https://schema.org/ReturnInStore",
+        "returnFees": "https://schema.org/FreeReturn"
       }
     },
     ...(product.dimensions && {
