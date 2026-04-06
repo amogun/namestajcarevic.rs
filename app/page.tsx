@@ -88,7 +88,7 @@ export default async function Home() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Living room interior warm wood tones */}
         <div className="absolute inset-0 z-0">
           <Image
