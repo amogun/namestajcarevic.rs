@@ -1,5 +1,5 @@
 import { getSupabase } from './supabase';
-import type { Product, InsertProduct, Order, CreateOrderRequest, ContactMessage, CreateContactMessageRequest } from '../shared/schema';
+import type { Product, InsertProduct, Order, CreateOrderRequest, ContactMessage, CreateContactMessageRequest, BlogPost } from '../shared/schema';
 
 // Bucket name - can be overridden via environment variable
 const PRODUCT_IMAGES_BUCKET = process.env.SUPABASE_PRODUCT_IMAGES_BUCKET || 'product-images';
@@ -182,6 +182,10 @@ export interface IStorage {
   getCategories(): Promise<string[]>;
   createOrder(order: CreateOrderRequest): Promise<Order>;
   createContactMessage(message: CreateContactMessageRequest): Promise<ContactMessage>;
+  // Blog
+  getBlogPosts(category?: string): Promise<BlogPost[]>;
+  getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
+  getBlogPostsByTag(tag: string): Promise<BlogPost[]>;
   // For seeding
   createProduct(product: InsertProduct): Promise<Product>;
 }
@@ -388,6 +392,49 @@ export class SupabaseStorage implements IStorage {
     }
 
     return message as ContactMessage;
+  }
+
+  async getBlogPosts(category?: string): Promise<BlogPost[]> {
+    const supabase = getSupabase();
+    let query = supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('published', true)
+      .order('published_at', { ascending: false });
+
+    if (category) {
+      query = query.eq('category', category);
+    }
+
+    const { data, error } = await query;
+    if (error) throw new Error(`Failed to fetch blog posts: ${error.message}`);
+    return (data || []) as BlogPost[];
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle();
+
+    if (error) throw new Error(`Failed to fetch blog post: ${error.message}`);
+    return data ? (data as BlogPost) : undefined;
+  }
+
+  async getBlogPostsByTag(tag: string): Promise<BlogPost[]> {
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('published', true)
+      .contains('tags', [tag])
+      .order('published_at', { ascending: false });
+
+    if (error) throw new Error(`Failed to fetch blog posts by tag: ${error.message}`);
+    return (data || []) as BlogPost[];
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {

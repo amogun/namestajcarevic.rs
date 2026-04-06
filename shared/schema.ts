@@ -145,3 +145,19 @@ export type ContactMessage = {
   status: string;
   created_at: string | null;
 };
+
+export type BlogPost = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string; // Markdown
+  cover_image: string | null;
+  author: string;
+  category: string | null;
+  tags: string[] | null;
+  published: boolean;
+  published_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+};

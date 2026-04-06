@@ -32,6 +32,7 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-primary-foreground/70">
               <li><Link href="/" className="hover:text-white transition-colors">Početna</Link></li>
               <li><Link href="/catalog" className="hover:text-white transition-colors">Katalog Proizvoda</Link></li>
+              <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
               <li><Link href="/about" className="hover:text-white transition-colors">O Nama</Link></li>
               <li><Link href="/contact" className="hover:text-white transition-colors">Kontakt</Link></li>
             </ul>

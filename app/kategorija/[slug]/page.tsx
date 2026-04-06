@@ -7,7 +7,7 @@ import Image from "next/image";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { type Product } from "@shared/schema";
 import { storage } from "@/lib/storage";
-import { CATEGORIES, getCategoryBySlug } from "@/lib/categoryConfig";
+import { CATEGORIES, getCategoryBySlug, type CategoryConfig } from "@/lib/categoryConfig";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 

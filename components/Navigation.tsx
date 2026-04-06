@@ -59,6 +59,7 @@ export function Navigation() {
   const links = [
     { href: "/", label: "Početna" },
     { href: "/catalog", label: "Katalog" },
+    { href: "/blog", label: "Blog" },
     { href: "/about", label: "O nama" },
     { href: "/contact", label: "Kontakt" },
   ];

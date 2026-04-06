@@ -12,6 +12,16 @@ async function getProducts() {
   }
 }
 
+async function getBlogPosts() {
+  try {
+    const posts = await storage.getBlogPosts();
+    return posts;
+  } catch (error) {
+    console.error('Error fetching blog posts for sitemap:', error);
+    return [];
+  }
+}
+
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://namestajcarevic.rs';
 
@@ -41,6 +51,12 @@ export async function GET() {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
   ];
 
   // Category pages
@@ -60,7 +76,16 @@ export async function GET() {
     priority: 0.8,
   }));
 
-  const allPages = [...staticPages, ...categoryPages, ...productPages];
+  // Blog posts
+  const blogPosts = await getBlogPosts();
+  const blogPostPages = blogPosts.map((post: any) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.updated_at || post.published_at || new Date().toISOString(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
+  const allPages = [...staticPages, ...categoryPages, ...productPages, ...blogPostPages];
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
